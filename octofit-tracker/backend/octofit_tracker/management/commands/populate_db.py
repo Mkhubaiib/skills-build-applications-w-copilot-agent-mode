@@ -4,7 +4,7 @@ from datetime import date, timedelta
 
 
 class Command(BaseCommand):
-    help = 'Populate the database with sample data for OctoFit Tracker'
+    help = 'Populate the octofit_db database with test data'
 
     def handle(self, *args, **options):
         self.stdout.write('Populating database with sample data...')
@@ -16,65 +16,61 @@ class Command(BaseCommand):
         User.objects.all().delete()
         Team.objects.all().delete()
 
-        # Create Teams
-        team1 = Team.objects.create(
-            name='Code Warriors',
-            description='A team of dedicated developers'
+        # Create Teams - Marvel and DC themed
+        team_marvel = Team.objects.create(
+            name='Team Marvel',
+            description='Earth\'s Mightiest Heroes staying fit'
         )
-        team2 = Team.objects.create(
-            name='Fitness Fanatics',
-            description='Health enthusiasts who love to code'
-        )
-        team3 = Team.objects.create(
-            name='Octocat Squad',
-            description='GitHub lovers staying fit'
+        team_dc = Team.objects.create(
+            name='Team DC',
+            description='Justice League fitness enthusiasts'
         )
 
-        # Create Users
+        # Create Users - Superhero themed
         users_data = [
-            {'name': 'Alice Smith', 'email': 'alice@example.com', 'team': team1, 'is_superhero': True},
-            {'name': 'Bob Johnson', 'email': 'bob@example.com', 'team': team1, 'is_superhero': False},
-            {'name': 'Carol White', 'email': 'carol@example.com', 'team': team2, 'is_superhero': False},
-            {'name': 'David Brown', 'email': 'david@example.com', 'team': team2, 'is_superhero': True},
-            {'name': 'Eve Davis', 'email': 'eve@example.com', 'team': team3, 'is_superhero': False},
-            {'name': 'Frank Miller', 'email': 'frank@example.com', 'team': team3, 'is_superhero': False},
+            {'name': 'Iron Man', 'email': 'ironman@marvel.com', 'team': team_marvel, 'is_superhero': True},
+            {'name': 'Captain America', 'email': 'cap@marvel.com', 'team': team_marvel, 'is_superhero': True},
+            {'name': 'Black Widow', 'email': 'widow@marvel.com', 'team': team_marvel, 'is_superhero': True},
+            {'name': 'Batman', 'email': 'batman@dc.com', 'team': team_dc, 'is_superhero': True},
+            {'name': 'Superman', 'email': 'superman@dc.com', 'team': team_dc, 'is_superhero': True},
+            {'name': 'Wonder Woman', 'email': 'wonderwoman@dc.com', 'team': team_dc, 'is_superhero': True},
         ]
 
         users = []
         for user_data in users_data:
             user = User.objects.create(**user_data)
             users.append(user)
-            self.stdout.write(f'Created user: {user.name}')
+            self.stdout.write(f'Created superhero user: {user.name}')
 
-        # Create Activities
-        activity_types = ['Running', 'Cycling', 'Swimming', 'Yoga', 'Weight Training', 'Walking']
+        # Create Activities - Superhero training themed
+        activity_types = ['Flight Training', 'Strength Training', 'Combat Practice', 'Endurance Run', 'Agility Drills', 'Team Strategy']
         for i, user in enumerate(users):
             for j in range(5):
                 Activity.objects.create(
                     user=user,
                     type=activity_types[j % len(activity_types)],
-                    duration=30 + (i * 10) + (j * 5),
+                    duration=45 + (i * 15) + (j * 10),
                     date=date.today() - timedelta(days=j)
                 )
-        self.stdout.write('Created activities for all users')
+        self.stdout.write('Created superhero training activities for all users')
 
-        # Create Workouts
+        # Create Workouts - Superhero themed
         workouts_data = [
             {
-                'name': 'Morning Cardio Blast',
-                'description': '30-minute high-intensity cardio workout to start your day'
+                'name': 'Avengers Assembly Workout',
+                'description': 'High-intensity team training session for Earth\'s Mightiest Heroes'
             },
             {
-                'name': 'Strength Builder',
-                'description': 'Full-body strength training routine for all fitness levels'
+                'name': 'Justice League Power Hour',
+                'description': 'Strength and endurance training worthy of the Justice League'
             },
             {
-                'name': 'Flexibility Flow',
-                'description': 'Yoga and stretching session for improved flexibility'
+                'name': 'Hero Conditioning',
+                'description': 'All-around fitness program for maintaining superhero status'
             },
             {
-                'name': 'Endurance Challenge',
-                'description': 'Long-distance running or cycling workout'
+                'name': 'Infinity Gauntlet Challenge',
+                'description': 'Ultimate endurance test - can you handle the power?'
             },
         ]
 
@@ -83,18 +79,21 @@ class Command(BaseCommand):
                 name=workout_data['name'],
                 description=workout_data['description']
             )
-            # Assign random users to suggested_for
-            workout.suggested_for.add(users[0], users[2], users[4])
+            # Assign users to suggested_for
+            workout.suggested_for.add(users[0], users[1], users[3])
             self.stdout.write(f'Created workout: {workout.name}')
 
         # Create Leaderboard entries
-        teams = [team1, team2, team3]
-        points = [450, 380, 320]
-        for team, point in zip(teams, points):
-            Leaderboard.objects.create(
-                team=team,
-                points=point
-            )
-            self.stdout.write(f'Created leaderboard entry for {team.name}: {point} points')
+        Leaderboard.objects.create(
+            team=team_marvel,
+            points=550
+        )
+        self.stdout.write(f'Created leaderboard entry for {team_marvel.name}: 550 points')
+        
+        Leaderboard.objects.create(
+            team=team_dc,
+            points=480
+        )
+        self.stdout.write(f'Created leaderboard entry for {team_dc.name}: 480 points')
 
-        self.stdout.write(self.style.SUCCESS('Successfully populated database with sample data!'))
+        self.stdout.write(self.style.SUCCESS('Successfully populated database with superhero sample data!'))
